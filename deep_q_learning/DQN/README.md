@@ -5,7 +5,7 @@
      <td>Trained for 650 episodes(4x speed)</td>
   </tr>
   <tr>
-    <td><img src="/images/zero-episode-model.gif" height="300" width="400"></td>
+    <td><img src="deep_q_learning/DQN/images/zero-episode-model.gif" height="300" width="400"></td>
     <td><img src="/images/650-episode-dqn-model-09NiTfua.gif" height="300px" width="400"></td>
   </tr>
  </table>

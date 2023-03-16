@@ -7,11 +7,12 @@ import tensorflow as tf
 
 class Eval: 
 
-    def __init__(self, env, model_path, number_of_episode=50):
+    def __init__(self, env, action_space, model_path, number_of_episode=50):
         self.env = env 
         self.model = tf.keras.models.load_model(model_path)
         self.recorder = RecordVideo('dqn_lunarlander', 'test_videos/', 15)
         self.number_of_episode = number_of_episode
+        self.action_space = action_space
         
     def test(self): 
         rewards = []
@@ -26,7 +27,7 @@ class Eval:
                 self.recorder.add_image(img) 
 
             while not done:
-                action =  greedy_policy(state, self.model, ACTION_SPACE)
+                action =  greedy_policy(state, self.model, self.action_space)
                 state, reward_prob, terminated, truncated, _ = env.step(action)
                 done = terminated or truncated 
                 reward += reward_prob

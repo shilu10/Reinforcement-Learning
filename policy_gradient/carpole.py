@@ -25,7 +25,9 @@ if __name__ == "__main__":
 
     plot_learning_curve(ep_rewards, 'cartpole_reinoforce')
 
-    evaluator = Eval(env, action_space, video_prefix, "models/", 10)
+    model_path = "models/cartpole_reinforce_"
+
+    evaluator = Eval(env, action_space, model_path,video_prefix, 10)
     evaluator.test()
 
 

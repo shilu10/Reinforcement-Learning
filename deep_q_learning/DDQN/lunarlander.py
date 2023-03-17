@@ -35,7 +35,7 @@ trainer_params = {
     "target_score": 200,
     "tau": 0.1,
     "soft_update": True,
-    "video_prefix": "ddqn",
+    "video_prefix": "vanilla_ddqn_lunarlander",
     "checkpoint": False
 }
 
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         
         model_path = "/kaggle/working/tmp/ddqn/lunarlander_DDQN_q_value/"
 
-        eval = Eval(env, model_path, action_space, 1)
+        eval = Eval(env, action_space, model_path, "vanilla_ddqn_lunarlander" 1)
 
         rewards = eval.test()
 

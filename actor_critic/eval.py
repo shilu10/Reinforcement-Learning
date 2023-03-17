@@ -7,10 +7,10 @@ import tensorflow as tf
 
 class Eval: 
 
-    def __init__(self, env, action_space, model_path, number_of_episode=50):
+    def __init__(self, env, action_space, model_path, video_prefix, number_of_episode=50):
         self.env = env 
         self.model = tf.keras.models.load_model(model_path)
-        self.recorder = RecordVideo('dqn_lunarlander', 'test_videos/', 15)
+        self.recorder = RecordVideo(video_prefix, 'test_videos/', 15)
         self.number_of_episode = number_of_episode
         self.action_space = action_space
         
@@ -34,11 +34,11 @@ class Eval:
                 step += 1 
                 if episode % 10 == 0:
                     img = env.render()
-                    recorder.add_image(img)
+                    self.recorder.add_image(img)
             
             rewards.append(reward)
             steps.append(step)
-            recorder.save(1) if episode % 10 == 0
+            self.recorder.save(episode) if episode % 10 == 0
         
         return rewards, steps
 

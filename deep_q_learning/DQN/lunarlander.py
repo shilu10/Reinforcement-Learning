@@ -67,7 +67,9 @@ if __name__ == "__main__":
             
         plot_learning_curve(episode_rewards, epsilon_history, "plot_file")
 
-        evaluator = Eval(env, "models/lunarlander_DQN_q_value/", 10)
+        model_path = "models/lunarlander_DQN_q_value/"
+
+        evaluator = Eval(env, action_space, model_path, "vanilla_dqn_lunarlander", 10)
         evaluator.test()
         
     except Exception as error: 

@@ -60,7 +60,8 @@ if __name__ == "__main__":
             
         plot_learning_curve(episode_rewards, epsilon_history, "vanila_dqn_cer")
 
-        evaluator = Eval(env, "models/lunarlander_DQN_q_value_cer/", 10)
+        model_path = "models/lunarlander_DQN_q_value_cer/"
+        evaluator = Eval(env, action_space, model_path, "cer_dqn_lunarlander", 10)
         evaluator.test()
         
         

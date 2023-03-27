@@ -38,8 +38,12 @@ class Eval:
             
             rewards.append(reward)
             steps.append(step)
-            self.recorder.save(episode) if episode % 10 == 0
+            self.recorder.save(episode) if episode % 10 == 0 else None 
         
         return rewards, steps
 
+model_path = "models/lunarlander_DDQN_q_value/"
+eval = Eval(env, action_space, model_path, "vanilla_ddqn_lunarlander", 1)
+rewards, steps = eval.test()
 
+print(rewards, steps)

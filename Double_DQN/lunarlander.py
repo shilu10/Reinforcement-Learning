@@ -3,6 +3,8 @@ import time
 import signal
 import time
 import sys
+from train import * 
+from utils import *
 import pickle
 
 env = make_env("LunarLander-v2", "videos/", 50)
@@ -59,12 +61,6 @@ if __name__ == "__main__":
             
         plot_learning_curve(episode_rewards, epsilon_history, "vanilla_ddqn")
         
-        model_path = "/kaggle/working/tmp/ddqn/lunarlander_DDQN_q_value/"
-
-        eval = Eval(env, action_space, model_path, "vanilla_ddqn_lunarlander" 1)
-
-        rewards = eval.test()
-
     except Exception as error: 
         raise error
         

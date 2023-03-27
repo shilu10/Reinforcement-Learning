@@ -42,4 +42,8 @@ class Eval:
         
         return rewards, steps
 
+model_path = "models/lunarlander_DQN_q_value/"
+evaluator = Eval(env, action_space, model_path, "vanilla_dqn_lunarlander", 10)
+rewards, steps = evaluator.test()
 
+print(rewards, steps)

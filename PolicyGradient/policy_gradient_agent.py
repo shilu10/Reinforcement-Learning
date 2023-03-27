@@ -33,12 +33,10 @@ class PolicyGradientAgent:
     action = tf.random.categorical(tf.math.log(action_logits), num_samples=1)
     return action
 
-
   def get_action(self, state): 
     action = self.policy(state).numpy()
     return action.squeeze()
   
-
   def learn(self, rewards, actions, states): 
     discounted_rewards = []
     discounted_reward = 0

@@ -1,5 +1,13 @@
+import numpy as np 
+import random 
+import tensorflow as tf 
+from policy_gradient_agent import *
+
 class Trainer: 
-  def __init__(self, env, action_space, input_dims, out_dims, video_prefix, is_tg, noe, max_steps, record, lr, gamma, chkpt, algo_name): 
+  def __init__(self, env, action_space, input_dims, out_dims, 
+                          video_prefix, is_tg, noe, max_steps, record, 
+                          lr, gamma, chkpt, algo_name
+                        ): 
     self.env = env
     self.noe = noe 
     self.max_steps = max_steps 
@@ -7,7 +15,8 @@ class Trainer:
     self.recorder = RecordVideo(video_prefix)
     self.is_tg = is_tg 
     self.record = record
-    self.agent = PolicyGradientAgent(input_dims, out_dims, lr, action_space, gamma, chkpt, algo_name)
+    self.agent = PolicyGradientAgent(input_dims, out_dims, lr, action_space,
+                                                         gamma, chkpt, algo_name)
     
   def train(self): 
 

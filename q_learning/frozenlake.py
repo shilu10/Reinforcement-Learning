@@ -5,6 +5,7 @@ import pickle
 from eval import *
 from record import *
 from save_to_hf import *
+from utils import *
 
 FROZENLAKE_ENV = gym.make("FrozenLake-v1", render_mode="rgb_array")
 NOA_SPACE = FROZENLAKE_ENV.action_space.n
@@ -21,11 +22,11 @@ EPSILON = 1
 
 if __name__ == "__main__": 
     """
-    q_table, training_rewards = train_model(FROZENLAKE_ENV,
+    q_table, training_rewards, epsilon_history, avg_rewards = train_model(FROZENLAKE_ENV,
                         NOS_SPACE,
                         NOA_SPACE,
                         noe=NOE,
-			epsilon=EPSILON,
+			            epsilon=EPSILON,
                         max_epsilon=MAX_EPSILON,
                         alpha=ALPHA,
                         gamma=GAMMA,
@@ -35,6 +36,8 @@ if __name__ == "__main__":
     with open("frozenlake_q_table.obj", "wb") as f: 
         pickle.dump(q_table, f) 
         print("Completed the traning of the model!!")
+
+    plot_learning_curve(training_rewards, epsilon_history, "q_learning_frozenlake")    
    # """
 
    

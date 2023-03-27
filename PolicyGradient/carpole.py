@@ -1,4 +1,3 @@
-from policy import * 
 from utils import * 
 from train import *
 from eval import *
@@ -21,13 +20,9 @@ video_prefix = "cartpole_policy_gradient"
 
 if __name__ == "__main__": 
     trainer = Trainer(env, action_space, input_dims, n_actions, video_prefix, is_tg, noe, max_steps, record, lr, gamma, chpkt, algo_name)
-    ep_rewards = trainer.train()
+    ep_rewards, avg_rewards = trainer.train()
 
     plot_learning_curve(ep_rewards, 'cartpole_reinoforce')
 
-    model_path = "models/cartpole_reinforce_"
-
-    evaluator = Eval(env, action_space, model_path,video_prefix, 10)
-    evaluator.test()
 
 

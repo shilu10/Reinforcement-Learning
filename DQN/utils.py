@@ -48,7 +48,7 @@ def plot_learning_curve(scores, epsilons, filename, lines=None):
     plt.savefig(filename)
 
 
-def make_env(env_name, video_file_name, episode_freq_fo_video): 
+def make_env(env_name, video_file_name="d", episode_freq_fo_video=1): 
     env = gym.make(env_name, render_mode="rgb_array")
     
     if len(env.observation_space.shape) >= 3: 

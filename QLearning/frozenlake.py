@@ -1,11 +1,6 @@
-import gym
+import gymnasium as gym
 import numpy as np 
-from train import *
 import pickle
-from eval import *
-from record import *
-from save_to_hf import *
-from utils import *
 
 FROZENLAKE_ENV = gym.make("FrozenLake-v1", render_mode="rgb_array")
 NOA_SPACE = FROZENLAKE_ENV.action_space.n
@@ -13,15 +8,14 @@ NOS_SPACE = FROZENLAKE_ENV.observation_space.n
 NOE = 10000
 MAX_EPSILON = 1
 ALPHA = 0.83
-GAMMA = 0.95
+GAMMA = 0.94
 MIN_EPSILON = 0.01
-EVAL_NOE = 200
-DECAY_RATE = 0.005
-MAX_STEP = 100
+DECAY_RATE = 0.0001
+MAX_STEP = 10000
 EPSILON = 1
 
 if __name__ == "__main__": 
-    """
+  
     q_table, training_rewards, epsilon_history, avg_rewards = train_model(FROZENLAKE_ENV,
                         NOS_SPACE,
                         NOA_SPACE,
@@ -37,10 +31,10 @@ if __name__ == "__main__":
         pickle.dump(q_table, f) 
         print("Completed the traning of the model!!")
 
-    plot_learning_curve(training_rewards, epsilon_history, "q_learning_frozenlake")    
-   # """
+    plot_learning_curve(avg_rewards, epsilon_history, "q_learning_frozenlake")   
 
-   
+# for huggingface
+   """
     # With this QTable got
     #Mean of reward: 0.695, std of Reward: 0.460407428263272
 

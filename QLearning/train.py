@@ -1,9 +1,7 @@
 import gym
 import numpy as np 
-from policy import *
-from video_recorder import *
 
-recorder = RecordVideo("q_learning")
+recorder = RecordVideo("q_learning", fps=5)
 
 def initialize_q_table(nos_space, noa_space): 
     q_table = np.zeros((nos_space, noa_space))
@@ -33,9 +31,9 @@ def train_model(env, nos_space, noa_space, noe, epsilon,
         done = False 
         tot_rew = 0    
         
-        if episode % 50 == 0:
+        if episode % 100 == 0:
             img = env.render()
-            recorder.add_image(ing)
+            recorder.add_image(img)
 
         if check_2d_array(state): 
             state = state[0]
@@ -69,28 +67,30 @@ def train_model(env, nos_space, noa_space, noe, epsilon,
             tot_rew += reward_prob
             step += 1 
 
-            if episode % 50 == 0:
+            if episode % 100 == 0:
                 img = env.render()
-                recorder.add_image(ing)
+                recorder.add_image(img)
 
             if done or step >= max_steps: 
                 break
-        
-        episode_rewards.append(tot_rew)
-        epsilon_history.append(epsilon)
-        avg_reward = np,mean(episode_rewards[-100:])
-        avg_rewards.append(avg_reward)
-        epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-eps_decay_rate*episode) 
-
+        epsilon = min_epsilon + (max_epsilon - min_epsilon)*np.exp(-eps_decay_rate*episode)      
+        if episode % 100 == 0:
+            episode_rewards.append(tot_rew)
+            epsilon_history.append(epsilon)
+            avg_reward = np.mean(episode_rewards[-100:])
+            avg_rewards.append(avg_reward)
+            
         if tot_rew > best_score:
             best_score = tot_rew
 
-        if episode % 50 == 0:
+        if episode % 100 == 0:
             recorder.save(episode)
-
-        print(f"[+] Episode: {episode}, reward: {tot_rew} Epsilon: {epsilon} Best Score {best_score} Avg Reward: {avg_reward}")
-    
+        
+        if episode % 100 == 0: 
+            print(f"[+] Episode: {episode}, reward: {tot_rew} Epsilon: {epsilon} Best Score {best_score} Avg Reward: {avg_reward}")
+        
+        # Early stopping
+        if np.mean(episode_rewards[-100: ]) == 1: 
+            break
 
     return q_table, episode_rewards, epsilon_history, avg_rewards
-
-

@@ -7,6 +7,7 @@ import time
 import sys
 import pickle
 import os 
+from utils import *
 
 
 if not os.path.exists("videos"): 
@@ -66,11 +67,6 @@ if __name__ == "__main__":
             pickle.dump(avg_rewards, f)
             
         plot_learning_curve(episode_rewards, epsilon_history, "plot_file")
-
-        model_path = "models/lunarlander_DQN_q_value/"
-
-        evaluator = Eval(env, action_space, model_path, "vanilla_dqn_lunarlander", 10)
-        evaluator.test()
         
     except Exception as error: 
         raise error

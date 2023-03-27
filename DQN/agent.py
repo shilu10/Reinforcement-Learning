@@ -82,7 +82,6 @@ class Agent:
             return
 
         states, actions, rewards, states_, dones = self.sample_experience()
-        
         indices = tf.range(self.batch_size, dtype=tf.int32)
       
         action_indices = tf.stack([indices, actions], axis=1)

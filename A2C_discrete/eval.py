@@ -1,18 +1,17 @@
 import random 
-import imageio
-from policy import greedy_policy
-from video_recorder import RecordVideo
+from policy import *
+from video_recorder import *
+import numpy as np 
+import random 
 import tensorflow as tf 
-
 
 class Eval: 
 
-    def __init__(self, env, action_space, model_path, video_prefix, number_of_episode=50):
+    def __init__(self, env, model_path, video_prefix, number_of_episode=50):
         self.env = env 
         self.model = tf.keras.models.load_model(model_path)
         self.recorder = RecordVideo(video_prefix, 'test_videos/', 15)
         self.number_of_episode = number_of_episode
-        self.action_space = action_space
         
     def test(self): 
         rewards = []
@@ -27,7 +26,10 @@ class Eval:
                 self.recorder.add_image(img) 
 
             while not done:
-                action =  greedy_policy(state, self.model, self.action_space)
+
+                if type(state) == tuple: 
+                  state = state[0]
+                action =  get_action(state, self.model,)
                 state, reward_prob, terminated, truncated, _ = env.step(action)
                 done = terminated or truncated 
                 reward += reward_prob
@@ -38,8 +40,13 @@ class Eval:
             
             rewards.append(reward)
             steps.append(step)
-            self.recorder.save(episode) if episode % 10 == 0
+            self.recorder.save(1) if episode % 10 == 0 else None 
         
         return rewards, steps
 
+video_prefix = "'actor_critic'"
+model_path = "/content/models/_actor_critic_actor_network"
+evaluator = Eval(env, model_path, video_prefix, 10)
+rewards, steps = evaluator.test()
 
+print(rewards, steps)

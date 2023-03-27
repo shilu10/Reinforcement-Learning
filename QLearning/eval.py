@@ -1,18 +1,17 @@
 import random 
 import imageio
-from policy import greedy_policy
-from video_recorder import RecordVideo
 import tensorflow as tf 
-
+import pickle
+import gymnasium as gym 
+from utils import *
 
 class Eval: 
 
-    def __init__(self, env, action_space, model_path, video_prefix, number_of_episode=50):
-        self.env = env 
-        self.model = tf.keras.models.load_model(model_path)
+    def __init__(self, env_id, qtable_obj_path, video_prefix, number_of_episode=50): 
+        self.env = make_env(env_id) 
         self.recorder = RecordVideo(video_prefix, 'test_videos/', 15)
         self.number_of_episode = number_of_episode
-        self.action_space = action_space
+        self.Qtable = pickle.load(open(qtable_obj_path, "rb"))
         
     def test(self): 
         rewards = []
@@ -27,7 +26,9 @@ class Eval:
                 self.recorder.add_image(img) 
 
             while not done:
-                action =  greedy_policy(state, self.model, self.action_space)
+                if type(state) == tuple:
+                    state = state[0]
+                action = np.argmax(self.Qtable[state][:])
                 state, reward_prob, terminated, truncated, _ = env.step(action)
                 done = terminated or truncated 
                 reward += reward_prob
@@ -43,3 +44,7 @@ class Eval:
         return rewards, steps
 
 
+obj_path = "/kaggle/input/frozenlake-object/frozenlake_q_table.obj"
+evaluator = Eval("FrozenLake-v1", obj_path, "qlearning", 50)
+rewards, steps = evaluator.test()
+print(rewards, steps)

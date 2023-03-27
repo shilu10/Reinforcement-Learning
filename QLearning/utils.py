@@ -31,3 +31,16 @@ def plot_learning_curve(scores, epsilons, filename, lines=None):
             plt.axvline(x=line)
 
     plt.savefig(filename)
+
+
+def make_env(env_name, video_file_name="d", episode_freq_fo_video=1): 
+    env = gym.make(env_name, render_mode="rgb_array")
+    
+    if len(env.observation_space.shape) >= 3: 
+        #env = AtariPreprocessing(env, 10, 4, 84, False, True)
+        env = ResizeObservation(env, 84)
+        env = GrayScaleObservation(env, keep_dim=False)
+        env = FrameStack(env, 4, lz4_compress=False)
+        env = NormalizeObservation(env)
+
+    return env

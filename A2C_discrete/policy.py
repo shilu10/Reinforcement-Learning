@@ -10,3 +10,13 @@ def get_action(state):
     action = action_probs.sample()
     self.action = action
     return action.numpy()
+
+"""
+    def get_action(self, state, greedy=False):
+        _logits = self.model(np.array([state]))
+        _probs = tf.nn.softmax(_logits).numpy()
+        if greedy:
+            return np.argmax(_probs.ravel())
+        return tl.rein.choice_action_by_probs(_probs.ravel())  # sam
+
+"""

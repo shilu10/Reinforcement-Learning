@@ -43,7 +43,7 @@ class Eval:
         return rewards, steps
 
 
-model_path = "models/lunarlander_dueling_dqn_q_value"
+model_path = "models/lunarlander_dueling_ddqn_q_value"
 eval = Eval(env, model_path, action_space, 10)
 test_rewards, steps = eval.test()
 

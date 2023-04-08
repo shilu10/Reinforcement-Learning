@@ -4,8 +4,6 @@ import signal
 import time
 import sys
 import pickle
-from utils import *
-from train import * 
 
 env = make_env("LunarLander-v2", "videos/", 50)
 action_space = [_ for _ in range(env.action_space.n)]
@@ -36,7 +34,9 @@ trainer_params = {
     "actions": action_space,
     "target_score": 200,
     "video_prefix": "dueling_dqn",
-    "checkpoint": False
+    "checkpoint": False,
+    "TAU": 0.01,
+    "soft_update": True
 }
 
     
@@ -58,7 +58,8 @@ if __name__ == "__main__":
             pickle.dump(avg_rewards, f)
             
         plot_learning_curve(episode_rewards, epsilon_history, "dueling_dqn")
-
+        
     except Exception as error: 
         raise error
         
+   # eval_model(env, "keras model", "videos/", fps=10)

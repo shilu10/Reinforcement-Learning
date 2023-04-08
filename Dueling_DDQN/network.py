@@ -29,16 +29,15 @@ class DeepQNetwork3D(keras.Model):
     def __init__(self, input_dims, n_actions):
         super(DeepQNetwork3D, self).__init__()
 
-        self.conv1 = Conv2D(32, 8, strides=(4, 4), activation='relu', data_format="channels_first", input_shape=input_dims)
-        self.conv2 = Conv2D(32, 4, strides=(2, 2), activation='relu', data_format="channels_first")
-        self.conv3 = Conv2D(64, 3, strides=(1, 1), activation='relu', data_format="channels_first")
+        self.conv1 = Conv2D(64, 8, strides=(4, 4), activation='relu', data_format="channels_first", input_shape=input_dims)
+        self.conv2 = Conv2D(64, 4, strides=(2, 2), activation='relu', data_format="channels_first")
+        self.conv3 = Conv2D(32, 3, strides=(1, 1), activation='relu', data_format="channels_first")
         self.flatten = Flatten()
 
         self.fc2 = Dense(128, activation='relu')
-        value_output = Dense(1)(backbone_2)
-        advantage_output = Dense(self.action_dim)(backbone_2)
-        output = Add()([value_output, advantage_output])
-
+        self.value_output = Dense(1)
+        self.advantage_output = Dense(n_actions)
+        self.add = Add()
 
     def call(self, state):
 
@@ -48,6 +47,7 @@ class DeepQNetwork3D(keras.Model):
         x = self.flatten(x)
         
         x = self.fc2(x)
-        A = self.A(x)
-        V = self.V(x)
-        return V, A
+        value_output = self.value_output(x)
+        advantage_output = self.advantage_output(x)
+        output = self.add([value_output, advantage_output])
+        return output

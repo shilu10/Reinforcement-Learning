@@ -17,6 +17,8 @@ class Agent:
         self.chkpt_dir = agent_params.get("chkpt_dir")
         self.n_actions = agent_params.get("n_actions")
         self.action_space = agent_params.get('actions')
+        self.soft_update = agent_params.get("soft_update")
+        self.TAU = agent_params.get("TAU")
         
         self.eps = agent_params.get("eps")
         self.min_eps = agent_params.get("min_eps")
@@ -28,11 +30,11 @@ class Agent:
 
         # networks and replaybuffer
         self.memory = ExperienceReplayBuffer(self.mem_size, self.input_dims, self.n_actions)
-        self.q_value_network = DeepQNetwork2D(self.input_dims, self.n_actions) if len(self.input_dims) < 3 else \
-                                                        DeepQNetwork3D(self.input_dims, self.n_actions)
+        self.q_value_network = DeepQNetwork3D(self.input_dims, self.n_actions) if len(self.input_dims) > 2 else \
+                                                                                    DeepQNetwork2D(self.input_dims, self.n_actions)
         self.q_value_network.compile(optimizer=Adam(learning_rate=self.lr))
-        self.target_q_network = DeepQNetwork2D(self.input_dims, self.n_actions) if len(self.input_dims) < 3 else \
-                                                        DeepQNetwork3D(self.input_dims, self.n_actions)
+        self.target_q_network = DeepQNetwork3D(self.input_dims, self.n_actions) if len(self.input_dims) > 2 else \
+                                                                                    DeepQNetwork2D(self.input_dims, self.n_actions)
         self.target_q_network.compile(optimizer=Adam(learning_rate=self.lr))
 
     def save_models(self):
@@ -68,9 +70,19 @@ class Agent:
         return action
 
     def replace_target_network(self):
-        if self.learn_step_counter % self.replace_target_weight_counter == 0:
+        if not self.soft_update:
             self.target_q_network.set_weights(self.q_value_network.get_weights())
-    
+            return
+        else: 
+            q_model_theta = self.q_value_network.get_weights()
+            target_model_theta = self.target_q_network.get_weights()
+            counter = 0
+            for q_weight, target_weight in zip(q_model_theta, target_model_theta):
+                target_weight = target_weight * (1-self.TAU) + q_weight * self.TAU
+                target_model_theta[counter] = target_weight
+                counter += 1
+            self.target_q_network.set_weights(target_model_theta)
+
     def decrement_epsilon(self): 
         self.eps -= self.eps_decay_rate
         self.eps = max(self.eps, self.min_eps)
@@ -80,35 +92,31 @@ class Agent:
             return
 
         self.replace_target_network()
-
+        
         states, actions, rewards, states_, dones = self.sample_experience()
-        rewards, actions, dones = rewards.numpy(), actions.numpy(), dones.numpy()
+        indices = tf.range(self.batch_size, dtype=tf.int32)
+        action_indices = tf.stack([indices, actions], axis=1)
 
         with tf.GradientTape() as tape:
-            q_pred = self.q_value_network(states)
-            q_eval = self.target_q_network(states_)
+        
+            q_pred = tf.gather_nd(self.q_value_network(states), indices=action_indices)
+            q_next = self.target_q_network(states_)
+            q_eval = self.q_value_network(states_)
 
-            q_target = tf.identity(q_pred)
-            q_target = q_target.numpy()
-            q_eval = q_eval.numpy()
+            max_actions = tf.math.argmax(q_eval, axis=1, output_type=tf.int32)
+            max_action_idx = tf.stack([indices, max_actions], axis=1)
 
-
-            batch_rewards = rewards
-            batch_max_vals = np.array([self.gamma * max(val) for val in q_eval])
-            batch_dones = [1 - int(done) for done in dones]
-
-            q_target[[np.arange(self.batch_size)], actions] =  batch_rewards + batch_max_vals * batch_dones 
+            q_target = rewards + \
+                self.gamma*tf.gather_nd(q_next, indices=max_action_idx) *\
+                (1 - dones.numpy())
 
             loss = keras.losses.MSE(q_pred, q_target)
-
+            
         params = self.q_value_network.trainable_variables
         grads = tape.gradient(loss, params)
-
         self.q_value_network.optimizer.apply_gradients(zip(grads, params))
-
+        
         self.learn_step_counter += 1
-        
-        self.decrement_epsilon()
+        self.decrement_epsilon()       
 
-        
         return self.eps

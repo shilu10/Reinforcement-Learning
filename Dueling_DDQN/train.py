@@ -1,4 +1,4 @@
-ifrom npy_append_array import NpyAppendArray
+from npy_append_array import NpyAppendArray
 import numpy as np
 
 class Trainer:   
@@ -28,6 +28,8 @@ class Trainer:
                         "eps": trainer_params.get("eps"),
                         "min_eps": trainer_params.get("min_eps"),
                         "eps_decay_rate": trainer_params.get("eps_decay_rate"),
+                        "soft_update": trainer_params.get("soft_update"),
+                        "TAU": trainer_params.get("TAU")
                         
                     }
         
@@ -46,7 +48,7 @@ class Trainer:
         best_reward = float("-inf")
 
         if self.checkpoint:
-          self.agent.load_models()
+            self.agent.load_models()
 
         for episode in range(self.noe): 
             n_steps = 0 
